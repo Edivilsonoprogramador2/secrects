@@ -60,7 +60,43 @@ export default function Login() {
         </Button>
       </BaseCard>
       <BaseModal>
-        <Text>Oia o Modal</Text>
+        <Text>Cadastro de usuario</Text>
+        <TextInput
+          value={nome}
+          label="Digite seu nome"
+          onChangeText={(value) => setNome(value)}
+          mode="outlined"
+        />
+        <TextInput
+          value={email}
+          label="Digite seu email"
+          onChangeText={(value) => setEmail(value)}
+          mode="outlined"
+          keyboardType="email"
+        />
+        <TextInput
+          value={senha}
+          label="Digite sua senha"
+          onChangeText={(value) => setSenha(value)}
+          right={
+            <TextInput.Icon
+              onPress={() => setSenhaVisivel(!senhaVisivel)}
+              icon={senhaVisivel ? 'eye' : 'eye-off'}
+            />
+          }
+          keyboardType="password"
+          secureTextEntry={senhaVisivel}
+          mode="outlined"
+        />
+        <Button
+          style={estilo.btn}
+          mode="contained"
+          onPress={() => cadastrar()}>
+          Cadastrar
+        </Button>
+        <Button style={estilo.btnCad} onPress={() => hideModal()}>
+          Cancelar
+        </Button>
       </BaseModal>
     </View>
   );
