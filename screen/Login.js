@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Text, Image, StyleSheet } from 'react-native';
+import { View, Text, Image, StyleSheet,ActivityIndicator } from 'react-native';
 import { TextInput, Button } from 'react-native-paper';
 
 import BaseModal from '../components/BaseModal';
@@ -10,6 +10,8 @@ import { UserContextGlobal } from '../context/UserContext';
 
 export default function Login() {
   const {
+    nome,
+    setNome,
     email,
     senha,
     setEmail,
@@ -18,9 +20,24 @@ export default function Login() {
     setSenhaVisivel,
     fazerLogin,
     showModal,
+    cadastrar,
+    hideModal,
+    color, 
+    loading,
   } = React.useContext(UserContextGlobal);
   return (
-    <View style={estilo.content}>
+    <View style={[estilo.content, { backgroundColor: color }]}>
+      {loading ? (
+        <View style={estilo.vwLoading}>
+          <ActivityIndicator
+            size="25"
+            color="#0af"
+            style={estilo.loading}
+          />
+        </View>
+      ) : (
+        <></>
+      )}
       <Image
         style={estilo.img}
         source="https://img.icons8.com/ios-filled/50/FFFFFF/lock.png"
@@ -105,7 +122,6 @@ export default function Login() {
 const estilo = StyleSheet.create({
   content: {
     flex: 1,
-    backgroundColor: '#000',
     padding: 20,
     justifyContent: 'center',
   },
@@ -120,4 +136,20 @@ const estilo = StyleSheet.create({
     marginBottom: 10,
   },
   btnCad: {},
+  
+  login: {
+    margin: 10,
+  },
+  vwLoading: {
+    flex: 1,
+    backgroundColor: '#00000055',
+    position: 'absolute',
+    alignItems: 'center',
+    justifyContent: 'center',
+    bottom: 0,
+    top: 0,
+    right: 0,
+    left:0,
+    zIndex: 1
+  },
 });

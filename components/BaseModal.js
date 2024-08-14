@@ -4,9 +4,9 @@ import { Modal, Portal, Text, Button, Provider } from 'react-native-paper';
 import { UserContextGlobal } from '../context/UserContext';
 
 const BaseModal = (props) => {
-  const { visible, hideModal } = React.useContext(UserContextGlobal);
+  const { visible, hideModal, containerStyle } = React.useContext(UserContextGlobal);
   
-  const containerStyle = { backgroundColor: 'white', padding: 20};
+  
 
   return (
     <Portal>
