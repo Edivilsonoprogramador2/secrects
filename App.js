@@ -100,8 +100,6 @@ const ligthThmme = {
 }
 export default function App() {
 
-
-
   return (
     <UserContext>
       <TrocaTela />

@@ -9,8 +9,8 @@ export const UserContextGlobal = React.createContext({});
 
 export default function UserContext(props) {
   const [nome, setNome] = React.useState(null);
-  const [email, setEmail] = React.useState('abc@gmail.com');
-  const [senha, setSenha] = React.useState('senha123');
+  const [email, setEmail] = React.useState('');
+  const [senha, setSenha] = React.useState('');
   const [idUsu, setIdUsu] = React.useState("");
 
   const [tela, setTela] = React.useState("login");
@@ -32,10 +32,13 @@ export default function UserContext(props) {
   const [titulo, setTitulo] = React.useState("");
   const [segredo, setSegredo] = React.useState("");
 
-  const [idComent, setIdComent] = React.useState(null); 
+  const [idComent, setIdComent] = React.useState(null);
   const [coment, setComent] = React.useState('');
-  const [usuarioComent, setUsuarioComent] = React.useState(''); 
-  const [likesComent, setLikesComent] = React.useState([]); 
+  const [usuarioComent, setUsuarioComent] = React.useState('');
+  const [likesComent, setLikesComent] = React.useState([]);
+
+
+  const [itemPost, setItemPost] = React.useState(null);
 
 
   var color = tema == "DarkTheme" ? "black" : "white";
@@ -58,12 +61,12 @@ export default function UserContext(props) {
   }
 
   function getUser() {
-    console.log(idUsu)
-    onValue(ref(getDatabase(),`/usuario/`+idUsu),(dados)=>{
-      setNome(dados.val().username)}, {
-        onlyOnce: true
-      })
-    
+    onValue(ref(getDatabase(), `/usuario/` + idUsu), (dados) => {
+      setNome(dados.val().username)
+    }, {
+      onlyOnce: true
+    })
+
   }
 
   async function getAll() {
@@ -77,8 +80,7 @@ export default function UserContext(props) {
           setLoading(false)
           //console.log(docs.val())
         } else {
-          //console.log("Sem dados")
-          setLoading(false)
+          //console.log("Sem dado-+-+
         }
       }
     ))
@@ -86,7 +88,7 @@ export default function UserContext(props) {
   }
 
   function cadastrar() {
-    if (nome == "" || email == ""|| senha == "") {
+    if (nome == "" || email == "" || senha == "") {
       Alert.alert('Preencha todos os campos!')
     } else {
       setLoading(true);
@@ -103,7 +105,7 @@ export default function UserContext(props) {
           };
           setLoading(false)
         }
-      )
+        )
     }
   }
 
@@ -138,17 +140,51 @@ export default function UserContext(props) {
     }
   }
 
-  function comentar(id){
-    const dados ={
-      id,
-      comentario,
-      usuario,
-      likes:[],
-    }
-    const updates = {};
-      let likes = segredos[id].likes.filter(item => item !== idUsu);
-      updates['/segredos/' + id + '/likes/'] = likes;
+  function abrirMensagens(item) {
+    setItemPost(item);
+    setTela('mensagens')
+  }
+
+  function comentar(id) {
+    if(coment != ""){
+      let dados = {
+        id: segredos[id].mensagens.length,
+        comentario: coment,
+        usuario: idUsu,
+        likes: [0]
+      }
+      const updates = {};
+      let list = segredos[id].mensagens;
+      let data = [...list, dados];
+      updates['/segredos/' + id + '/mensagens/'] = data;
       update(ref(getDatabase()), updates);
+      setComent("");
+    }else{
+      Alert.alert("Atenção","Escreva algo para comentar!");
+    }
+    }
+
+  function curtiuComm(idPost, idCom) {
+    if (segredos[idPost].mensagens[idCom].likes.includes(idUsu)) {
+      return true
+    } else {
+      return false
+    }
+  }
+
+  function curtirComm(idPost, idCom) {
+    if (!curtiuComm(idPost, idCom)) {
+      const updates = {};
+      let likes = segredos[idPost].mensagens[idCom].likes;
+      likes.push(idUsu);
+      updates['/segredos/' + idPost + '/mensagens/' + idCom + "/likes"] = likes;
+      update(ref(getDatabase()), updates);
+    } else {
+      const updates = {};
+      let likes = segredos[idPost].mensagens[idCom].likes.filter(item => item !== idUsu);
+      updates['/segredos/' + idPost + '/mensagens/' + idCom + "/likes"] = likes;
+      update(ref(getDatabase()), updates);
+    }
   }
 
   function curtiu(id) {
@@ -184,6 +220,7 @@ export default function UserContext(props) {
   return (
     <UserContextGlobal.Provider
       value={{
+        comentar,
         sair,
         getAll,
         curtir,
@@ -221,7 +258,20 @@ export default function UserContext(props) {
         idUsu,
         mandarSegredo,
         curtiu,
-        idComent, setIdComent, coment, setComent, usuarioComent, setUsuarioComent, likesComent, setLikesComent
+        curtiuComm,
+        curtirComm,
+        idComent,
+        setIdComent,
+        coment,
+        setComent,
+        usuarioComent,
+        setUsuarioComent,
+        likesComent,
+        setLikesComent,
+        abrirMensagens,
+        itemPost,
+        setItemPost
+
       }}>
       {props.children}
     </UserContextGlobal.Provider>

@@ -1,6 +1,6 @@
 import React from 'react';
-import { View, Text, Image, StyleSheet,ActivityIndicator } from 'react-native';
-import { TextInput, Button } from 'react-native-paper';
+import { View, Text, Image, StyleSheet, ActivityIndicator } from 'react-native';
+import { TextInput, Button, IconButton } from 'react-native-paper';
 
 import BaseModal from '../components/BaseModal';
 
@@ -22,8 +22,11 @@ export default function Login() {
     showModal,
     cadastrar,
     hideModal,
-    color, 
+    color,
     loading,
+    text,
+    setTema,
+    tema
   } = React.useContext(UserContextGlobal);
   return (
     <View style={[estilo.content, { backgroundColor: color }]}>
@@ -40,8 +43,18 @@ export default function Login() {
       )}
       <Image
         style={estilo.img}
-        source="https://img.icons8.com/ios-filled/50/FFFFFF/lock.png"
+        source={{ uri: `https://img.icons8.com/ios-filled/50/${text == 'white' ? "FFFFFF" : "000000"}/lock.png` }}
       />
+      <View style={estilo.top}>
+        <IconButton
+          icon="theme-light-dark"
+          iconColor={text}
+          size={25}
+          onPress={() => setTema(tema == "DarkTheme" ? "LigthTheme" : "DarkTheme")
+          }
+        />
+        <Text style={{ color: text, fontSize: 10 }}>Mudar Tema</Text>
+      </View>
       <BaseCard
         title="Login do APP"
         sub="Suas mensagens com a maior segurança 🔒">
@@ -136,7 +149,7 @@ const estilo = StyleSheet.create({
     marginBottom: 10,
   },
   btnCad: {},
-  
+
   login: {
     margin: 10,
   },
@@ -149,7 +162,12 @@ const estilo = StyleSheet.create({
     bottom: 0,
     top: 0,
     right: 0,
-    left:0,
+    left: 0,
     zIndex: 1
   },
+  top:{
+    position:'absolute',
+    top:20,
+    left: 10
+  }
 });

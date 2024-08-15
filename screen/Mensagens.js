@@ -1,109 +1,90 @@
 import React, { useState } from 'react';
 import { View, Text, FlatList, StyleSheet, SafeAreaView, Alert } from 'react-native';
-import { Card, IconButton,TextInput, Title } from 'react-native-paper';
+import { Card, IconButton, TextInput, Title } from 'react-native-paper';
 import Header from '../components/Header';
 
 import { UserContextGlobal } from '../context/UserContext';
 const CommentScreen = () => {
 
-        const {text} = React.useContext(UserContextGlobal);
+    const { text, itemPost, segredos, coment, comentar, curtirComm, curtiuComm, setComent, curtir, curtiu } = React.useContext(UserContextGlobal);
 
-    const [comment, setComment] = useState('');
-    const [comments, setComments] = useState([]);
 
-    // Dados de exemplo para o post
-    const post = {
-        titulo: 'Título do Post',
-        segredo: 'Conteúdo do post.',
-        mensagens: [0, 1, 2],
-        likes: [0, 1],
-        id: 'post-id'
-    };
-
-    // Função para adicionar um comentário
-    const addComment = () => {
-        if (comment.trim()) {
-            setComments([...comments, { id: Date.now().toString(), text: comment }]);
-            setComment('');
-        }
-    };
 
     // Função para renderizar cada comentário
-    const renderItem = ({ item }) => (
+    const renderItem = ({ item }) => item.comentario != undefined ? (
         <View style={estilo.commentContainer}>
             <View style={estilo.commentContent}>
-                <Text style={estilo.commentText}>{item.text}</Text>
+                <Text style={[estilo.commentText, { color: text }]}>{item.comentario}</Text>
                 <IconButton
-                    icon="heart-outline"
+                    icon={curtiuComm(itemPost.id, item.id) ? "heart" : "heart-outline"}
+                    iconColor={curtiuComm(itemPost.id, item.id) ? "#f00" : text}
                     size={20}
-                    onPress={() => Alert.alert('Curtida', 'Comentário curtido!')}
+                    onPress={() => curtirComm(itemPost.id, item.id)}
                 />
+                <Text style={{ color: text }}>{item.likes.length - 1}</Text>
             </View>
         </View>
-    );
+    ) : <></>;
 
-    return (
-        <SafeAreaView style={estilo.container}>
-            <Header></Header>
-            <View style={estilo.vwContainer}>
+    function Head() {
+        return (
+            <View>
 
                 <Card style={text == 'black' ? estilo.cardClaro : estilo.cardEscuro}>
                     <Card.Content>
-                        <Title>{post.titulo}</Title>
-                        <Text style={[estilo.postText,{ color: text }]}>{post.segredo}</Text>
+                        <Title>{itemPost.titulo}</Title>
+                        <Text style={[estilo.postText, { color: text }]}>{itemPost.segredo}</Text>
                         <View style={estilo.btnsPost}>
-                            <IconButton
-                                iconColor={text}
-                                icon="share-variant-outline"
-                                size={20}
-                                onPress={() => Alert.alert("Atenção", "Funcionalidade indisponível no momento")}
-                            />
+
                             <View style={estilo.btnsActionPost}>
                                 <IconButton
-                                iconColor={text}
-                                    icon="message-reply-text-outline"
+                                    icon={curtiu(itemPost.id) ? "heart" : "heart-outline"}
+                                    iconColor={curtiu(itemPost.id) ? "#f00" : text}
                                     size={20}
-                                    onPress={() => Alert.alert('Mensagens', 'Abrir mensagens')}
+                                    onPress={() => { curtir(itemPost.id) }}
                                 />
-                                <Text style={{ color: text }}>{post.mensagens.length}</Text>
-                            </View>
-                            <View style={estilo.btnsActionPost}>
-                                <IconButton
-                                iconColor={text}
-                                    icon="heart-outline"
-                                    size={20}
-                                    onPress={() => Alert.alert('Curtida', 'Post curtido!')}
-                                />
-                                <Text style={{ color: text }}>{post.likes.length}</Text>
+                                <Text style={{ color: text }}>{segredos[itemPost.id].likes.length - 1}</Text>
                             </View>
                         </View>
                     </Card.Content>
                 </Card>
+            </View>
+        )
+    }
 
-                <View style={estilo.footer}>
+    function Foot(){
+        return(
+            <Text style={[estilo.foot,{color: text}]}>. . .</Text>
+        )
+    }
+
+    return (
+        <SafeAreaView style={estilo.container}>
+            <Header></Header>
+            <View style={estilo.footer}>
                     <TextInput
-                        value={comment}
-                        onChangeText={setComment}
-                        placeholder="Escreva seu comentário..."
+                        value={coment}
+                        onChangeText={(valor) => setComent(valor)}
+                        label="Comentario"
                         mode="outlined"
                         style={estilo.input}
                     />
                     <IconButton
-                    iconColor={text}
+                        iconColor={text}
                         icon="send"
                         size={20}
-                        onPress={addComment}
+                        onPress={() => comentar(itemPost.id)}
                     />
                 </View>
-
-                <FlatList
-                    data={comments}
-                    renderItem={renderItem}
-                    keyExtractor={item => item.id}
-                    contentContainerStyle={estilo.list}
-                />
-            </View>
-        </SafeAreaView>
+            <FlatList
+                ListHeaderComponent={() => <Head/>}
+                ListFooterComponent={() => <Foot/>}
+                data={segredos[itemPost.id].mensagens}
+                renderItem={renderItem}
+                keyExtractor={item => item.id}
+                style={estilo.flatList}
+            />
+        </SafeAreaView >
     );
 };
 
@@ -111,17 +92,12 @@ const estilo = StyleSheet.create({
     container: {
         flex: 1,
     },
-    vwContainer: {
-        padding: 20
-    },
     cardClaro: {
         backgroundColor: '#eee',
-        marginHorizontal: 10,
         marginVertical: 5
     },
     cardEscuro: {
         backgroundColor: '#111',
-        marginHorizontal: 10,
         marginVertical: 5
     },
     postText: {
@@ -130,7 +106,7 @@ const estilo = StyleSheet.create({
     btnsPost: {
         flexDirection: 'row',
         alignItems: 'center',
-        justifyContent: 'space-between',
+        justifyContent: 'center',
         borderTopWidth: 1,
         borderTopColor: 'gray',
         marginTop: 10,
@@ -147,11 +123,9 @@ const estilo = StyleSheet.create({
     },
     input: {
         flex: 1,
-        borderWidth: 1,
-        borderColor: '#ddd',
         borderRadius: 4,
-        padding: 8,
         marginRight: 10,
+        marginLeft: 20
     },
     list: {
         flexGrow: 1,
@@ -169,6 +143,14 @@ const estilo = StyleSheet.create({
     commentText: {
         flex: 1,
     },
+    flatList: {
+        padding: 20
+    },
+    foot:{
+        marginVertical: 20,
+        alignSelf:'center',
+        fontSize:20
+    }
 });
 
 export default CommentScreen;

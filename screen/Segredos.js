@@ -10,7 +10,7 @@ import Menu from '../components/Menu';
 
 export default function () {
 
-    const { showModal, getUser, setTela, getAll, segredos, setSegredos, text, curtiu, loading, curtir } = React.useContext(UserContextGlobal);
+    const { showModal, getUser, abrirMensagens, getAll, segredos, setSegredos, text, curtiu, loading, curtir } = React.useContext(UserContextGlobal);
 
     React.useEffect(() => {
         getUser();
@@ -41,7 +41,7 @@ export default function () {
                                 icon="message-reply-text-outline"
                                 iconColor={text}
                                 size={20}
-                                onPress={() => setTela('mensagens')}
+                                onPress={() => abrirMensagens(item)}
                             />
                             <Text style={{ color: text }}>{item.mensagens.length - 1}</Text>
                         </View>
@@ -61,6 +61,14 @@ export default function () {
         )
     }
 
+    
+    function Foot(){
+        return(
+            <Text style={[estilo.foot,{color: text}]}>. . .</Text>
+        )
+    }
+
+
     return (
         <SafeAreaView style={{ flex: 1 }}>
             {loading ? (
@@ -79,6 +87,7 @@ export default function () {
                 <Menu></Menu>
                 <FlatList
                     data={segredos}
+                    ListFooterComponent={() => <Foot/>}
                     renderItem={(item) => itemList(item)}
                     key={(item) => item.id}
                 />
@@ -100,6 +109,12 @@ const estilo = StyleSheet.create({
     },
     login: {
         margin: 10,
+    },
+    
+    foot:{
+        marginVertical: 20,
+        alignSelf:'center',
+        fontSize:20
     },
     vwLoading: {
         flex: 1,
